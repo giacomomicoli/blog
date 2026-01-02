@@ -1,0 +1,7 @@
+Flask
+python-dotenv
+Watchdog
+greenlet
+gunicorn
+markdown
+python-frontmatter

@@ -1,0 +1,22 @@
+/* HOMEPAGE SHAREABLES */
+:root {
+	--primary-color: #3498db;
+	--secondary-color: #2ecc71;
+	--font-color: #d1d7e0;
+	--background-color: #212830;
+	--font-family: "Atkinson Hyperlegible Mono", sans-serif;
+}
+
+body {
+    font-family: var(--font-family);
+    margin: 0 auto;
+    max-width: 1200px;
+    padding: 20px;
+    background-color: var(--background-color);
+    color: var(--font-color);
+}
+
+/* POST PAGE */
+.backhome {
+	font-size: 20px;
+}

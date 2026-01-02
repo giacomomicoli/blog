@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="it">
+	<head>
+		{% block head %}
+			{% include 'components/head.html' %}	
+		{% endblock %}
+		{% block title %}
+			<title>{{ page.title }} - Blog </title>
+		{% endblock %}
+	</head>
+	<body>
+		<header>
+			{% block header %}
+				<nav>
+				</nav>
+			{% endblock %}
+		</header>
+		{% block content %}
+			{{ page.content | safe }}
+		{% endblock %}
+		{% block scripts %}
+		{% endblock %}
+	</body>
+</html>

@@ -1,0 +1,28 @@
+services:
+  app:
+    build:
+      context: .
+      target: development
+      dockerfile: Dockerfile
+    container_name: blog
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT}
+      - FLASK_ENV=${FLASK_ENV}
+      - WATCHDOG_USE_POLLING=1
+      - HOST=${HOST}
+      - PORT=${PORT}
+      - DEBUG=${DEBUG}
+    volumes:
+      - ./:/app
+    ports:
+      - "5000:5000"
+
+  caddy:
+    image: caddy:latest
+    ports: 
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    environment:
+      - DOMAIN=${DOMAIN}
