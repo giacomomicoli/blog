@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, g
+from flask import Flask, render_template, request, g, Response
 import markdown
 import frontmatter
 import logging
