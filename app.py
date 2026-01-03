@@ -38,22 +38,27 @@ def hello_world():
                 continue
             post_title = markdown.markdown(post_content['title']) if 'title' in post_content else ''
             post_excerpt = markdown.markdown(post_content['excerpt']) if 'excerpt' in post_content else ''
-            page['content'] += f'<h2>{post_title}</h2><div>{post_excerpt}</div><a href="/page/{post}">Read more</a>'
+            page['content'] += f'<h2>{post_title}</h2><div>{post_excerpt}</div><a href="/post/{post}">Read more</a>'
         return render_template('base.html', page=page)
 
-@app.route('/page/<string:page_name>')
-def show_page(page_name):
+@app.route('/post/<string:post_name>')
+def show_page(post_name):
     import os
     from flask import abort
     pages_dir = 'pages'
-    file_path = os.path.join(pages_dir, f'{page_name}.md')
+    file_path = os.path.join(pages_dir, f'{post_name}.md')
     if not os.path.exists(file_path):
         abort(404)
     with open(file_path, 'r') as file:
         content = frontmatter.load(file)
         post = {
             'content': markdown.markdown(content.content), 
-            'title': page_name
+            'title': post_name
         }
     # Simple rendering of markdown content as converted HTML
     return render_template('post.html', post=post)
+
+@app.route('/sitemap.xml')
+def sitemap():
+    # Return the existing sitemap.xml file from the root folder
+    return Response(open('sitemap.xml').read(), mimetype='application/xml')
