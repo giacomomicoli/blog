@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+	{% block head %}
+		<meta name="description" content="{{ post.description }}">
+		{% include 'components/head.html' %}
+		<title>porcodio</title>
+	{% endblock %}
+	{% block content %}
+		<a class="backhome" href="/">🏠</a>
+		<article class="post">
+			{{ post.content | safe }}
+		</article>
+	{% endblock %}

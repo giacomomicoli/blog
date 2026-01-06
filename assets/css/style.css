@@ -3,6 +3,7 @@
 	--primary-color: #3498db;
 	--secondary-color: #2ecc71;
 	--font-color: #d1d7e0;
+	--a-color: #478be6;
 	--background-color: #212830;
 	--font-family: "Atkinson Hyperlegible Mono", sans-serif;
 }
@@ -14,6 +15,10 @@ body {
     padding: 20px;
     background-color: var(--background-color);
     color: var(--font-color);
+}
+
+a {
+    color: var(--a-color);
 }
 
 /* POST PAGE */

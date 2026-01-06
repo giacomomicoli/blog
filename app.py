@@ -2,60 +2,68 @@ from flask import Flask, render_template, request, g, Response
 import markdown
 import frontmatter
 import logging
+import os
 
 app = Flask(__name__, static_folder='assets', static_url_path='/assets')
-default_language = 'it'
-
+default_language = 'en'
+# Basic logging configuration
+logging.basicConfig(level=logging.INFO)
+config = {
+   'post_dir': 'post'
+}
+site = {
+    'name': 'YARB',
+    'url': os.getenv('SITE_URL'),
+}
 def get_posts():
     # Read from the pages directory for markdown files
-    import os
-    pages_dir = 'pages'
-    pages = []
-    if not os.path.exists(pages_dir):
-        return pages
-    for filename in os.listdir(pages_dir):
+    posts_dir = config.get('post_dir')
+    posts = []
+    if not os.path.exists(posts_dir):
+        return posts
+    for filename in os.listdir(posts_dir):
         if filename.endswith('.md'):
-            pages.append(filename[:-3])  # Remove .md extension
-    return pages
+            posts.append(filename[:-3])  # Remove .md extension
+            logging.info(f'Found post: {filename}')
+        logging.info(f'Ignoring file: {filename}')
+    return posts
 
-@app.route('/')
-def hello_world():
-    posts = get_posts()
-    page = dict(
-        title='Home',
-        content=''
-    )
-    # Return a list of available posts reading markdown files from the pages directory
-    # Provide every page as an excerpt reading from the excerpt meta field and provide a linnk to the full page
-    # Return a message if no pages are available
-    if not posts:
-        page['content'] = '<h1>No pages available</h1>'
-    else:
-        for post in posts:
-            post_content = frontmatter.load(f'pages/{post}.md')
-            post_id = markdown.markdown(str(post_content['id'])) if 'id' in post_content else ''
-            if not post_id:
-                continue
-            post_title = markdown.markdown(post_content['title']) if 'title' in post_content else ''
-            post_excerpt = markdown.markdown(post_content['excerpt']) if 'excerpt' in post_content else ''
-            page['content'] += f'<h2>{post_title}</h2><div>{post_excerpt}</div><a href="/post/{post}">Read more</a>'
-        return render_template('base.html', page=page)
+@app.route('/', methods=['GET'])
+def index():
+    filenames = get_posts()
+    posts = []
+    for post in filenames:
+        filepath = os.path.join(config.get('post_dir'), f"{post}.md")
+        if not os.path.exists(filepath):
+            continue
+        with open(filepath, 'r') as p:
+            post = frontmatter.load(p)
+            metadata = post.metadata
+            content = markdown.markdown(post.content)
+            posts.append({
+                'metadata': metadata,
+                'content': content
+            })
 
-@app.route('/post/<string:post_name>')
-def show_page(post_name):
-    import os
+    return render_template('index.html', posts=posts, site_url=site['url'])
+
+@app.route('/post/<string:slug>', methods=['GET'])
+def post_detail(slug):
     from flask import abort
-    pages_dir = 'pages'
-    file_path = os.path.join(pages_dir, f'{post_name}.md')
-    if not os.path.exists(file_path):
+    filepath = os.path.join(config.get('post_dir'), f"{slug}.md")
+    if not os.path.exists(filepath):
         abort(404)
-    with open(file_path, 'r') as file:
-        content = frontmatter.load(file)
+    with open(filepath, 'r') as p:
+        post = frontmatter.load(p)
+        metadata = post.metadata
+        content = markdown.markdown(post.content)
         post = {
-            'content': markdown.markdown(content.content), 
-            'title': post_name
+            'metadata': {
+                **metadata,
+                'image': f"{os.getenv('BUCKET_ENDPOINT')}/{metadata.get('image')}" if metadata.get('image') else None
+            },
+            'content': content
         }
-    # Simple rendering of markdown content as converted HTML
     return render_template('post.html', post=post)
 
 @app.route('/sitemap.xml')

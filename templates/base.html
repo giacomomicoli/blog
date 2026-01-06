@@ -1,24 +1,23 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 	<head>
-		{% block head %}
-			{% include 'components/head.html' %}	
-		{% endblock %}
-		{% block title %}
-			<title>{{ page.title }} - Blog </title>
-		{% endblock %}
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{% block title %}Homepage{% endblock %} - YARB</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }} " />
+		{% include 'components/head.html' %}
+		{% block head %}{% endblock %}
 	</head>
 	<body>
 		<header>
-			{% block header %}
-				<nav>
-				</nav>
-			{% endblock %}
+			<h1>{{ "<Yet Another Random Blog>" | e }}</h1>
 		</header>
-		{% block content %}
-			{{ page.content | safe }}
-		{% endblock %}
-		{% block scripts %}
-		{% endblock %}
+		<main>
+			{% block content %}{% endblock %}
+		</main>
+		<footer>
+			{% block footer %}{% endblock %}
+		</footer>
 	</body>
 </html>
+
