@@ -1,6 +1,3 @@
-[submodule "utils"]
-	path = utils
-	url = git@github.com:giacomomicoli/blog-utils.git
 [submodule "post"]
 	path = post
 	url = git@github.com:giacomomicoli/blog-content.git

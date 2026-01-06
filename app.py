@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, g, Response
+from flask import Flask, render_template, make_response, request, g, Response
+from flask_caching import Cache
 import markdown
 import frontmatter
 import logging
@@ -8,6 +9,8 @@ app = Flask(__name__, static_folder='assets', static_url_path='/assets')
 default_language = 'en'
 # Basic logging configuration
 logging.basicConfig(level=logging.INFO)
+# Cache configuration
+cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache'})
 config = {
    'post_dir': 'post'
 }
@@ -66,7 +69,24 @@ def post_detail(slug):
         }
     return render_template('post.html', post=post)
 
-@app.route('/sitemap.xml')
+@app.route('/sitemap.xml', methods=['GET'])
+@cache.cached(timeout=3600)
 def sitemap():
-    # Return the existing sitemap.xml file from the root folder
-    return Response(open('sitemap.xml').read(), mimetype='application/xml')
+    posts_path = get_posts()
+    posts = []
+    for post in posts_path:
+        filepath = os.path.join(config.get('post_dir'), f"{post}.md")
+        if not os.path.exists(filepath):
+            continue
+        with open(filepath, 'r') as p:
+            post = frontmatter.load(p)
+            metadata = post.metadata
+            posts.append({
+                'lastmod': metadata.get('updated_at', metadata.get('created_at')),
+                'slug': metadata.get('slug')
+            })
+    sitemap_xml = render_template('sitemap_template.xml', posts=posts, site_url=site['url'])
+    response = make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
+
+    return response

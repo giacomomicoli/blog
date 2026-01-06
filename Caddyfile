@@ -1,5 +1,38 @@
 {$DOMAIN}, www.{$DOMAIN} {
+    # 1. global level compression
     encode zstd gzip
+
+    # 2. robots.txt handling
+    handle /robots.txt {
+        header Content-Type text/plain
+        # 24h caching strategy to reduce aggressive bots load
+        header Cache-Control "public, max-age=86400" 
+        
+        respond "User-agent: *
+Disallow: /api/
+Disallow: /admin/
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+# --- Sitemap ---
+Sitemap: https://{$DOMAIN}/sitemap.xml"
+    }
+
+    # 3. Routing dell'Applicazione
     reverse_proxy app:5000
+
+    # 4. Fallback per file statici (se ne hai bisogno)
     file_server
 }
+
