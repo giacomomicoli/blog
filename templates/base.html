@@ -10,7 +10,11 @@
 	</head>
 	<body>
 		<header>
-			<h1>{{ "<Yet Another Random Blog>" | e }}</h1>
+			{% if request.endpoint == 'index' %}
+				<h1>{{ "<Yet Another Random Blog>" | e }}</h1>
+			{% else %}
+				<div class="h1-replacement">{{ "<Yet Another Random Blog>" | e }}</div>
+			{% endif %}
 		</header>
 		<main>
 			{% block content %}{% endblock %}
