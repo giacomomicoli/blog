@@ -1,7 +1,40 @@
-/* POST */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f4f4f4;
+/* ============================================
+   POST-SPECIFIC STYLES
+   Extends style.css for blog post pages
+   ============================================ */
+
+/* 
+ * Note: This file can be used for post-specific overrides.
+ * The main styles are defined in style.css and should be
+ * sufficient for most use cases. Only add styles here if
+ * you need post-specific customizations.
+ */
+
+/* Example: Additional post body styles if needed */
+.post-body table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-block: var(--space-md, 24px);
+	font-size: var(--font-size-sm, 0.875rem);
+	overflow-x: auto;
+	display: block;
+}
+
+.post-body th,
+.post-body td {
+	padding: var(--space-xs, 8px) var(--space-sm, 16px);
+	border: 1px solid var(--border-color, #3a4553);
+	text-align: left;
+}
+
+.post-body th {
+	background-color: var(--surface-color, #2a323d);
+	font-weight: 600;
+}
+
+/* Horizontal rule styling */
+.post-body hr {
+	border: none;
+	border-top: 1px solid var(--border-color, #3a4553);
+	margin-block: var(--space-lg, 32px);
 }

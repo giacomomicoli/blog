@@ -11,11 +11,11 @@
     <article class="post-preview">
       <header>
         <h2><a href="/post/{{ post.metadata.slug }}">{{ post.metadata.title }}</a></h2>
-		  <time datetime="{{ post.metadata.created_at }}">{{ post.metadata.created_at }} by <i>{{ post.metadata.author }}</i></time>
+        <time datetime="{{ post.metadata.created_at }}">{{ post.metadata.created_at }} by <em>{{ post.metadata.author }}</em></time>
       </header>
       <p class="excerpt">{{ post.metadata.excerpt }}</p>
       <footer>
-        <a href="/post/{{ post.metadata.slug }}" aria-label="Read more about {{ post.metadata.title }}">Read More</a>
+        <a href="/post/{{ post.metadata.slug }}" aria-label="Read more about {{ post.metadata.title }}">Read More →</a>
       </footer>
     </article>
   {% else %}
