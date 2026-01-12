@@ -1,32 +1,70 @@
 {% extends 'base.html' %}
 {% block title %} {{ post.metadata.title }} {% endblock %}
 {% block head %}
+	{# --- BASE META --- #}
 	<meta name="description" content="{{ post.metadata.description }}" />
+	<link rel="canonical" href="{{ site_url}}/post/{{ post.metadata.slug }}" />
+	<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
+	{# --- OPEN GRAPH (Facebook/LinkedIn/Slack) --- #}
+    	<meta property="og:locale" content="en_US" />
+    	<meta property="og:type" content="article" />
+   	<meta property="og:title" content="{{ post.metadata.title }}" />
+    	<meta property="og:description" content="{{ post.metadata.description }}" />
+    	<meta property="og:url" content="{{ site_url}}/post/{{ post.metadata.slug }}" />
+    	<meta property="og:site_name" content="YARB" />
+    	<meta property="article:published_time" content="{{ post.metadata.created_at }}" />
+    	<meta property="article:modified_time" content="{{ post.metadata.updated_at | default(post.metadata.created_at) }}" />
+    	<meta property="article:author" content="{{ post.metadata.author }}" />
+
+	{# --- IMAGE OG --- #}
 	<meta property="og:image" content="{{ post.metadata.image }}" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:image:type" content="image/png" />
-	<meta property="og:image:alt" content="A 8-bit retro pixel art of the nyan cat riding on the famous windows xp grass hill background." />
-	<link rel="canonical" href="{{ site_url}}/post/{{ post.metadata.slug }}" />
-	<script type="application/ld+json">
-	{
-		"@context": "https://schema.org",
-		"@type": "BlogPosting",
-		"headline": "{{ post.metadata.title }}",
-		"description": "{{ post.metadata.description }}",
-		"image": {
-			"@type": "ImageObject",
-			"url": "{{ post.metadata.image }}",
-			"width": 1200,
-			"height": 630,
-			"caption": "A 8-bit retro pixel art of the nyan cat riding on the famous windows xp grass hill background."
-		},
-		"author": {
-			"@type": "Person",
-			"name": "{{ post.metadata.author }}"
-		},
-	}
-	</script>
+	<meta property="og:image:alt" content="{{ post.metadata.image_description }}" />
+
+	{# --- TWITTER CARD (X) --- #}
+    	<meta name="twitter:card" content="summary_large_image" />
+    	<meta name="twitter:title" content="{{ post.metadata.title }}" />
+    	<meta name="twitter:description" content="{{ post.metadata.description }}" />
+   	<meta name="twitter:image" content="{{ post.metadata.image }}" />
+    	<meta name="twitter:label1" content="Written by" />
+    	<meta name="twitter:data1" content="{{ post.metadata.author }}" />
+	{# --- SCHEMA.ORG (GEO OPTIMIZED) --- #}
+    	<script type="application/ld+json">
+    	{
+        	"@context": "https://schema.org",
+        	"@type": "BlogPosting",
+        	"mainEntityOfPage": {
+            		"@type": "WebPage",
+            		"@id": "{{ site_url}}/post/{{ post.metadata.slug }}"
+        	},
+        	"headline": "{{ post.metadata.title }}",
+        	"description": "{{ post.metadata.description }}",
+        	"image": {
+            		"@type": "ImageObject",
+            		"url": "{{ post.metadata.image }}",
+            		"width": 1200,
+            		"height": 630
+        		},
+        	"author": {
+            		"@type": "Person",
+            		"name": "{{ post.metadata.author }}",
+            		"url": "{{ site_url }}/about-me" 
+        		},
+        	"publisher": {
+            		"@type": "Organization",
+            		"name": "YARB",
+            		"logo": {
+                		"@type": "ImageObject",
+                		"url": "{{ site_url }}/assets/logo.png" 
+            		}
+        	},
+        	"datePublished": "{{ post.metadata.created_at }}",
+        	"dateModified": "{{ post.metadata.updated_at | default(post.metadata.created_at) }}"
+    	}
+    </script>
 {% endblock %}
 
 {% block content %}

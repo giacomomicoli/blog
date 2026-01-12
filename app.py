@@ -74,6 +74,7 @@ def post_detail(slug):
 def sitemap():
     posts_path = get_posts()
     posts = []
+    bucket_endpoint = os.getenv('BUCKET_ENDPOINT')
     for post in posts_path:
         filepath = os.path.join(config.get('post_dir'), f"{post}.md")
         if not os.path.exists(filepath):
@@ -81,12 +82,51 @@ def sitemap():
         with open(filepath, 'r') as p:
             post = frontmatter.load(p)
             metadata = post.metadata
+            image_full_url = None
+            if metadata.get('image'):
+                image_full_url = f"{bucket_endpoint}/{metadata.get('image')}"
             posts.append({
                 'lastmod': metadata.get('updated_at', metadata.get('created_at')),
-                'slug': metadata.get('slug')
+                'slug': metadata.get('slug'),
+                'image': image_full_url,
+                'title': metadata.get('title')
             })
     sitemap_xml = render_template('sitemap_template.xml', posts=posts, site_url=site['url'])
     response = make_response(sitemap_xml)
     response.headers["Content-Type"] = "application/xml"
 
+    return response
+
+@app.route('/robots.txt', methods=['GET'])
+@cache.cached(timeout=3600)
+def robots():
+    sitemap_url = f"{site['url']}/sitemap.xml"
+    
+    env = os.getenv('FLASK_ENV', 'development') 
+    
+    lines = []
+    
+    if env == 'production':
+        # --- PRODUCTION RULES ---
+        lines.append("User-agent: *")
+        lines.append("Allow: /")
+        
+        # Block internal search or admin paths if you ever add them
+        lines.append("Disallow: /admin/") 
+        lines.append("Disallow: /search/")
+        
+        # Block AI Bots specifically? (Optional strategy decision)
+        # lines.append("User-agent: GPTBot")
+        # lines.append("Disallow: /") # Uncomment if you HATE AI scrapers (not recommended for exposure)
+        
+        # Point to the Sitemap
+        lines.append(f"Sitemap: {sitemap_url}")
+        
+    else:
+        # --- DEV/STAGING RULES (The Safety Net) ---
+        lines.append("User-agent: *")
+        lines.append("Disallow: /")
+    
+    response = make_response("\n".join(lines))
+    response.headers["Content-Type"] = "text/plain"
     return response

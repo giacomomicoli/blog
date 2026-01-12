@@ -1,16 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-	<url>
-		<loc>{{ site_url }}/</loc>
-		<changefreq>weekly</changefreq>
-		<priority>1.0</priority>
-	</url>
-	{% for post in posts %}
-	<url>
-		<loc>{{ site_url }}/post/{{ post.slug }}</loc>
-		<lastmod>{{ post.lastmod.strftime('%Y-%m-%d') }}</lastmod>
-		<changefreq>monthly</changefreq>
-		<priority>0.8</priority>
-	</url>
-	{% endfor %}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+    
+    {# --- Homepage --- #}
+    <url>
+        <loc>{{ site_url }}/</loc>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    {# --- Posts --- #}
+    {% for post in posts %}
+    <url>
+        <loc>{{ site_url }}/post/{{ post.slug }}</loc>
+        
+        <lastmod>
+            {% if post.lastmod.strftime is defined %}
+                {{ post.lastmod.strftime('%Y-%m-%d') }}
+            {% else %}
+                {{ post.lastmod }}
+            {% endif %}
+        </lastmod>
+        
+        {# Image Extension #}
+        {% if post.image %}
+        <image:image>
+		<image:loc>{{ post.image }}</image:loc>
+            	<image:title>{{ post.title | e }}</image:title>
+        </image:image>
+        {% endif %}
+    </url>
+    {% endfor %}
 </urlset>
